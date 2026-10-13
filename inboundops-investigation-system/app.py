@@ -88,13 +88,13 @@ def init_db():
         ]
         for i, row in enumerate(sample):
             # Using *_ catches the expected 11 variables and ignores any extra fields
-            seller, seller_id, fc, reason, expected, actual, priority, status, owner, summary, due_offset, *_ = row
+            case_ref, seller, seller_id, fc, reason, expected, actual, priority, status, owner, summary, due_offset = row
             created = datetime.utcnow() - timedelta(days=abs(due_offset) + 2)
             due = datetime.utcnow() + timedelta(days=due_offset)
             cur = conn.execute("""INSERT INTO cases
               (case_ref,seller_name,seller_id,fc_code,reason,expected_amount,actual_amount,currency,status,priority,owner,summary,due_at,created_at,updated_at,resolution,resolved_amount)
               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-              (f"INB-26{100+i}", seller, seller_id, fc, reason, expected, actual, "INR", status, priority, owner, summary,
+              (case_ref, seller, seller_id, fc, reason, expected, actual, "INR", status, priority, owner, summary,
                due.replace(microsecond=0).isoformat()+"Z", created.replace(microsecond=0).isoformat()+"Z",
                now_iso(), "Reconciled and closed" if status == "Resolved" else "", expected-actual if status == "Resolved" else 0))
             case_id = cur.lastrowid
