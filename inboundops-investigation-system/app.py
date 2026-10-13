@@ -87,7 +87,8 @@ def init_db():
           ("INB-26012","Nova Stationers","SEL-1288","PUN3","Duplicate charge",12400,12400,"Medium","Investigating","M. Iyer","Duplicate-charge hypothesis being checked against transaction references.",4),
         ]
         for i, row in enumerate(sample):
-            seller, seller_id, fc, reason, expected, actual, priority, status, owner, summary, due_offset = row
+            # Using *_ catches the expected 11 variables and ignores any extra fields
+            seller, seller_id, fc, reason, expected, actual, priority, status, owner, summary, due_offset, *_ = row
             created = datetime.utcnow() - timedelta(days=abs(due_offset) + 2)
             due = datetime.utcnow() + timedelta(days=due_offset)
             cur = conn.execute("""INSERT INTO cases
